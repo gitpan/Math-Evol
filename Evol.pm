@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.04';
+$VERSION = '1.05';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -302,7 +302,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.04,
+Version 1.05,
 #COMMENT#
 
 =head1 SUBROUTINES
@@ -461,7 +461,7 @@ the first will contain the current values
 while the others contain alternative values.
 The user should then judge which of the strings produces the best result.
 I<choose_best_text> must return I<($preference, $continue)> where
-<$preference> is the index of the preferred string (0, 1, etc).
+I<$preference> is the index of the preferred string (0, 1, etc).
 The other argument I<($continue)> is set false if the user
 thinks the optimal result has been arrived at;
 this is I<text_evol>'s only convergence criterion.

@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/perl -w
 #########################################################################
 #        This Perl script is Copyright (c) 2002, Peter J Billam         #
 #               c/o P J B Computing, www.pjb.com.au                     #
@@ -7,7 +7,9 @@
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
 
-require './Evol.pm'; import Math::Evol;
+use Math::Evol;
+use Test::Simple tests => 2;
+my $detailed = 0;
 
 sub minimise {
 	my $sum = 0.0;
@@ -42,49 +44,49 @@ EOT
 
 my @x  = (3.456, 1.234, -2.345, 4.567);
 my @sm = (.8, .4, .6, 1.2);
-my $fail = 0;
 
 # ----------------- first test &evol --------------------
 my @returns = &evol(\@x, \@sm, \&minimise, \&contain, 10);
 my $fail1 = 0;
-foreach (@{$returns[0]}) { if (abs $_>0.0001) {warn "\$_ = $_\n"; $fail1++;} }
-if ($fail1) { warn "subroutine &evol failed to find the minimum\n"; }
-foreach (@{$returns[1]}) {
-	if (abs $_ > 0.0001) { warn "step size still $_\n"; $fail1++; }
+foreach (@{$returns[0]}) {
+	if (abs $_>0.0001) { if ($detailed) { warn "\$_ = $_\n"; } $fail1++; }
 }
-if ($fail1) {
-	$fail++;
-	warn "evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
-	warn "sm = ", join(", ", @{$returns[1]}), "\n";
-	warn "objective = $returns[2]\n";
-	warn "success   = $returns[3]\n";
-} else {
-	print "subroutine evol OK\n";
-}
-if (! $returns[3]) {
-	warn "evol ran out of time; maybe you have a slow cpu ?\n";
+ok (!$fail1, "evol");
+if ($detailed) {
+	if ($fail1) { warn "subroutine &evol failed to find the minimum\n"; }
+	foreach (@{$returns[1]}) {
+		if (abs $_ > 0.0001) { warn "step size still $_\n"; $fail1++; }
+	}
+	if ($fail1) {
+		warn "evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
+		warn "sm = ", join(", ", @{$returns[1]}), "\n";
+		warn "objective = $returns[2]\n";
+		warn "success   = $returns[3]\n";
+	}
+	if (! $returns[3]) {
+		warn "evol ran out of time; maybe you have a slow cpu ?\n";
+	}
 }
 
 # ----------------- second test &select_evol --------------------
 @returns = &select_evol( \@x, \@sm, \&choosebetter, 0, 1);
 my $fail2 = 0;
-foreach (@{$returns[0]}) { if (abs $_>0.001) {warn "\$_ = $_\n"; $fail2++;} }
-if ($fail2) { warn "subroutine &select_evol failed to find the minimum\n"; }
-foreach (@{$returns[1]}) {
-   if (abs $_ > 0.001) { warn "step size still $_\n"; $fail2++; }
+foreach (@{$returns[0]}) {
+	if (abs $_>0.001) { if ($detailed) { warn "\$_ = $_\n"; } $fail2++; }
 }
-if ($fail2) {
-	$fail++;
-   warn "select_evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
-   warn "sm = ", join(", ", @{$returns[1]}), "\n";
-} else {
-   print "subroutine select_evol OK\n";
+ok (!$fail2, "select_evol");
+if ($detailed) {
+	if ($fail2) { warn "subroutine &select_evol failed to find the minimum\n"; }
+	foreach (@{$returns[1]}) {
+   	if (abs $_ > 0.001) { warn "step size still $_\n"; $fail2++; }
+	}
+	if ($fail2) {
+   	warn "select_evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
+   	warn "sm = ", join(", ", @{$returns[1]}), "\n";
+	}
 }
 
-# ------------------------- summary --------------------------
-if ($fail) { warn "failed $fail tests\n"; exit 1;
-} else { warn "passed all tests\n"; exit 0;
-}
+__END__
 
 # needs a sub choosebettertext, RSN ...
 # ----------------- third test &select_evol --------------------
@@ -97,8 +99,6 @@ if ($fail3) {
 } else {
    print "subroutine text_evol OK\n";
 }
-
-__END__
 
 =pod
 
