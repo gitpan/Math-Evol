@@ -1,3 +1,6 @@
 20021019 Math-Evol-1.00 Evolution Search Optimisation
 20021020 right version in Install, some doc fixes
 20021021 1.01 select_evol gets step size adjustment the right way round !
+20021021 new_text not newtext in sub choosebest in sub text_evol
+20021021 bug fixed retrieving @_ in sub text_evol
+20021021 1.02 debug switched off in text_evol

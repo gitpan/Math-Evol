@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.01';
+$VERSION = '1.02';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -124,12 +124,13 @@ sub select_evol { my ($xbref,$smref,$func_ref,$constrain_ref,$nchoices) = @_;
 	# modified from Schwefel's sliding flat window average to an EMA
 	my $desired_success_rate = 1.0 - 0.8**$nchoices;
 	my $success_rate = $desired_success_rate; 
-	# test every 10*$n binary choices equivalent
-	my $test_every = 10 * $n * (log 2) / (log ($nchoices+1));
+	# test every 5*$n binary choices equivalent - 10*$n is just too slow.
+	my $test_every = 5 * $n * (log 2) / (log ($nchoices+1));
 	my $ema = exp (-1.0 / $test_every);
 	my $one_m_ema = 1.0 - $ema;
-	warn "success_rate=$success_rate test_every=$test_every ema=$ema\n"
-	 if $debug;
+	warn sprintf
+	("n=$n nchoices=$nchoices success_rate=%g test_every=%g ema=%g\n",
+	 $success_rate, $test_every, $ema) if $debug;
 
 	if ($constrain_ref) { @xb = &$constrain_ref(@xb); }
 	my @func_args;  # array of refs to arrays
@@ -167,7 +168,7 @@ sub select_evol { my ($xbref,$smref,$func_ref,$constrain_ref,$nchoices) = @_;
 	}
 }
 
-sub text_evol { my ($text, $nchoices); local ($func_ref) = @_;
+sub text_evol { my ($text, $nchoices); local ($func_ref);
 	($text, $func_ref, $nchoices) = @_;
 	return unless $text;
 	if (ref $func_ref ne 'CODE') {
@@ -175,7 +176,7 @@ sub text_evol { my ($text, $nchoices); local ($func_ref) = @_;
 	}
 	if (! $nchoices) { $nchoices = 1; }
 
-	my $debug = 1;
+	my $debug = 0;
 	local @text = split ("\n", $text);
 	my ($linenum,$m,@xb,@sm,@min,@max) = ($[,0);
 	local (@linenums, @firstbits, @middlebits, $lastbit);
@@ -210,21 +211,21 @@ sub text_evol { my ($text, $nchoices); local ($func_ref) = @_;
 	push @sub_constr, "\treturn \@_;\n}\n";
 	warn join ('', @sub_constr)."\n" if $debug;
 
-	local ($xbref, $smref, @texts);
 	sub choose_best {
-		my $linenum;
+		my $xbref; my $linenum; @texts = ();
 		while ($xbref = shift @_) {
 			my @newtext = @text; my $i = $[;
 			foreach $linenum (@linenums) {
-				$new_text[$linenum] = $firstbits[$i] . sprintf ('%g', $$xbref[$i])
+				$newtext[$linenum] = $firstbits[$i] . sprintf ('%g', $$xbref[$i])
 				. $middlebits[$i];
 				$i++;
 			}
-			push @texts, join ("\n", @new_text);
+			push @texts, join ("\n", @newtext);
 		}
 		return &$func_ref(@texts);
 	}
 
+	my ($xbref, $smref);
 	if ($some_constraints) {
 		eval join '', @sub_constr; if ($@) { die "text_evol: $@\n"; }
 		($xbref, $smref) =
@@ -302,7 +303,7 @@ in a text file the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.01,
+Version 1.02,
 #COMMENT#
 
 =head1 SUBROUTINES

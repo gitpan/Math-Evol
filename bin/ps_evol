@@ -6,7 +6,7 @@
 #     This script is free software; you can redistribute it and/or      #
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
-# ps_evol Version 1.01
+# ps_evol Version 1.02
 
 eval "require 'Math/Evol.pm';";
 if ($@) { require 'Evol.pm'; }
@@ -100,7 +100,7 @@ See I<perldoc Math::Evol> for more details,
 and as an example the PostScript file I<plant.ps>,
 included with the distribution.
 
-Version 1.01,
+Version 1.02,
 #COMMENT#
 
 =head1 DEPENDENCIES
