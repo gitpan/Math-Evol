@@ -1,0 +1,35 @@
+
+                       Math::Evol.pm
+
+This module implements the two-membered evolution strategy.
+Derivatives of the objective function are not required.
+Constraints can be incorporated.  The caller must supply initial
+values for the variables and for the initial step sizes.
+
+This two-membered evolution strategy is a random strategy, and as
+such is particularly robust and will cope well with large numbers
+of variables, or rugged objective funtions.
+
+Evol.pm works either automatically with an objective function to be
+minimised, or interactively with a (suitably patient) human who at
+each step will choose the better of two (or several) possibilities.
+
+A subroutine is supplied allowing the evolution of numeric parameters
+in a text file. The parameters are identified by special comments,
+which also supply the step sizes. This make possible the optimisation
+of code according to human judgement, for example PostScript code.
+A subroutine ps_evol is included for fine-tuning PostScript drawings.
+
+To install:
+   perl Install
+
+that's all ! or you can still do it the old way ...
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+For up-to-date source, see http://www.cpan.org/SITES.html
+and look for the directory authors/id/P/PJ/PJB
+
+Peter J Billam    computing@pjb.com.au    http://www.pjb.com.au
