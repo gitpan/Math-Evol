@@ -133,7 +133,7 @@ sub initscr {
 	$stty = `stty -g`; chop $stty;
 	open(TTYIN, "</dev/tty") || (warn "Can't read /dev/tty: $!\n", return 0);
 
-	if ($^O eq 'FreeBSD') { system("stty -echo -icrnl raw </dev/tty");
+	if ($^O =~ /FreeBSD/i) { system("stty -echo -icrnl raw </dev/tty");
 	} else { system("stty -echo -icrnl raw </dev/tty >/dev/tty");
 	}
 	# system("stty -echo -icrnl raw </dev/tty");  # various old tries ...
@@ -149,7 +149,7 @@ sub endwin {
 	print TTY "\033[0m";
 	if ($initscr_already_run > 1) { $initscr_already_run--; return; }
 	close TTY; close TTYIN;
-	if ($^O eq 'FreeBSD') { system("stty $stty </dev/tty") if $stty;
+	if ($^O =~ /FreeBSD/i) { system("stty $stty </dev/tty") if $stty;
 	} else { system("stty $stty </dev/tty >/dev/tty") if $stty;
 	}
 	$initscr_already_run = 0;
@@ -923,7 +923,7 @@ HOME, LOGDIR, EDITOR and PAGER, if they are set.
 
 =head1 AUTHOR
 
-Peter J Billam <computing@pjb.com.au>
+Peter J Billam, www.pjb.com.au/comp/contact.html
 
 =head1 CREDITS
 

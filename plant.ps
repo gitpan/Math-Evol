@@ -24,7 +24,10 @@
 % Michael Barnsley, Academic Press, p.88
 
 % The IFS is   newx = a[k]*x + b[k]*y + e[k]; newy = c[k]*x + d[k]*y + f[k];
-% So the IFS is specified by the arrays a,b,c,d,e, and p, and their dimension n
+% So the IFS is specified by the arrays a,b,c,d,e,f and their dimension n
+
+% BUT NOTE THAT Barnsley's b and c are swapped compared with the
+% b and c in PostScript's matrix notation eg for concat ...
 
 % can always mutate without changing image by adding a=1 b=0 c=0 d=1 e=0 f=0...
 
@@ -42,7 +45,7 @@
 			starting_image
 		} {
 			gsave
-			[a k get b k get c k get d k get e k get f k get] concat draw_image
+			[a k get c k get b k get d k get e k get f k get] concat draw_image
 			grestore
 		} ifelse
 		/k k 1 add def k n ge { exit } if
@@ -66,12 +69,12 @@
 /a [ 0.0  0.42 % evol step 0.1  min  0.4  max 0.9
  0.42          % evol step 0.07 min  0.8  max 0.45
  0.1 ] def     % evol step 0.07 min -0.18 max 0.15
-/b [ 0.0 -0.42 % evol step 0.1  min -0.5  max 0.1
- -0.42         % evol step 0.05 min -0.5  max -0.2
- 0.0 ] def     % evol step 0.07 min -0.05 max 0.32
-/c [ 0.0  0.42 % evol step 0.11 min -0.1  max 0.48
+/b [ 0.0  0.42 % evol step 0.11 min -0.1  max 0.48
  -0.42         % evol step 0.15 min -0.5  max 0.3
  0.0 ] def     % evol step 0.07 min -0.05 max 0.3
+/c [ 0.0 -0.42 % evol step 0.1  min -0.5  max 0.1
+ -0.42         % evol step 0.05 min -0.5  max -0.2
+ 0.0 ] def     % evol step 0.07 min -0.05 max 0.32
 /d [ 0.5       % evol step 0.03 min 0.1   max 0.6
  0.42          % evol step 0.1  min 0.4   max 0.9
  0.42          % evol step 0.05 min 0.2   max 0.5

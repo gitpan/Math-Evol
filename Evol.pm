@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.02';
+$VERSION = '1.03';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -277,8 +277,7 @@ Math::Evol.pm - Evolution search optimisation
 =head1 SYNOPSIS
 
  use Math::Evol;
- (\@xb, \@sm, $fb, $lf) =
-   &evol (\@xb, \@sm, \&function, \&constrain, $tm, %options);
+ (\@xb,\@sm,$fb,$lf) = &evol(\@xb,\@sm,\&function,\&constrain,$tm);
  # or
  (\@xb, \@sm) = &select_evol(\@xb, \@sm, \&choose_best, \&constrain);
  # or
@@ -299,23 +298,23 @@ Evol.pm works either automatically (evol) with an objective function to
 be minimised, or interactively (select_evol) with a (suitably patient)
 human who at each step will choose the better of two possibilities.
 Another subroutine (text_evol) allows the evolution of numeric parameters
-in a text file the parameters to be varied being identified in the text
+in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.02,
+Version 1.03,
 #COMMENT#
 
 =head1 SUBROUTINES
 
 =over 3
 
-=item I<evol>(\@xb, \@sm, \&function, \&constrain, $tm, %options);
+=item I<evol>(\@xb, \@sm, \&minimise, \&constrain, $tm);
 
 Where the arguments are:
  I<@xb> the initial values of variables,
  I<@sm> the initial values of step sizes,
- I<&function> the function to be minimised,
+ I<&minimise> the function to be minimised,
  I<&constrain> a function constraining the values,
  I<$tm> the max allowable cpu time in seconds
 
@@ -474,7 +473,7 @@ A4 PostScript drawings which is included with this package.
 
 =head1 AUTHOR
 
-Peter J Billam <peter@pjb.com.au>
+Peter J Billam, www.pjb.com.au/comp/contact.html
 
 =head1 CREDITS
 

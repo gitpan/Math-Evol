@@ -6,7 +6,7 @@
 #     This script is free software; you can redistribute it and/or      #
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
-# ps_evol Version 1.02
+# ps_evol Version 1.03
 
 eval "require 'Math/Evol.pm';";
 if ($@) { require 'Evol.pm'; }
@@ -73,6 +73,7 @@ ps_evol - Perl script to fine-tune A4 PostScript drawings
 
 =head1 SYNOPSIS
 
+ vi plant.ps
  ps_evol plant.ps > p2.ps
 
 =head1 DESCRIPTION
@@ -92,7 +93,7 @@ When the user decides to call a halt,
 the latest preferred variant is written to the standard output.
 
 The parameters to be varied in the PostScript file
-and marked out by special comments, such as
+must be marked out by special comments, such as
 
  /gray_sky .87 def % evol step 0.05 min 0.0 max 1.0
 
@@ -100,7 +101,7 @@ See I<perldoc Math::Evol> for more details,
 and as an example the PostScript file I<plant.ps>,
 included with the distribution.
 
-Version 1.02,
+Version 1.03,
 #COMMENT#
 
 =head1 DEPENDENCIES
@@ -109,7 +110,7 @@ Uses the CPAN module Term::Clui.pm to dialogue with the user.
 
 =head1 AUTHOR
 
-Peter J Billam <computing@pjb.com.au>
+Peter J Billam, www.pjb.com.au/comp/contact.html
 
 =head1 CREDITS
 
@@ -118,7 +119,7 @@ Richard Dawkin's I<Blind Watchmaker> software.
 
 =head1 SEE ALSO
 
-Math::Evol.pm, http://www.pjb.com.au/, perl(1).
+Math::Evol.pm, Term::Clui.pm, http://www.pjb.com.au/, perl(1).
 
 =cut
 

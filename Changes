@@ -4,3 +4,6 @@
 20021021 new_text not newtext in sub choosebest in sub text_evol
 20021021 bug fixed retrieving @_ in sub text_evol
 20021021 1.02 debug switched off in text_evol
+20021021 minor pod tweaks
+20030701 FreeBSD bug corrected ($^O now gives freebsd)
+20030905 1.03 email replaced by contact.html for improved longevity
