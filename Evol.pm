@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.03';
+$VERSION = '1.04';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -302,7 +302,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.03,
+Version 1.04,
 #COMMENT#
 
 =head1 SUBROUTINES

@@ -5,7 +5,7 @@ use Config;
 &check_kit;
 
 my $libdir; my $bindir; my $man1dir; my $man3dir; my $comment; my $perlbin;
-my $version = '1.03';
+my $version = '1.04';
 ($libdir, $bindir, $man1dir, $man3dir) = &defaults();
 
 if (! -t STDIN) {  # not interactive, use defaults ...
@@ -15,7 +15,7 @@ if (! -t STDIN) {  # not interactive, use defaults ...
 }
 
 if ($libdir) {
-	my $choice = &choose('Installing ...', 'interactively',
+	my $choice = &choose("Installing\n\n(Arrow-keys and Return, or q to quit)",
 	'using system default locations', 'Cancel');
 	if ($choice eq 'Cancel') { exit 0; }
 	if ($choice eq 'using system default locations') {
@@ -256,12 +256,12 @@ sub check_kit {
 	print STDERR "Checking your kit ... ";
 
 	my %file_sizes = (
-		'README', 1415,
-		'Changes', 488,
+		'README', 1400,
+		'Changes', 560,
 		'MANIFEST', 86,
 		'Evol.pm', 17791,
 		'bin/ps_evol', 3818,
-		'Clui', 31718,
+		'Clui', 26894,
 		'test.pl', 3750,
 	);
 
