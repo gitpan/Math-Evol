@@ -26,30 +26,34 @@ sub contain {
    }
 	return @_;
 }
-sub choosebetter { my ($a, $b, $c) = @_;
+sub choosebetter { my ($a_ref, $b_ref) = @_;
+	my $a_sum = 0.0; foreach (@$a_ref) { $a_sum += ($_ * $_); }
+	my $b_sum = 0.0; foreach (@$b_ref) { $b_sum += ($_ * $_); }
+	my $preference = 0; if ($b_sum < $a_sum)     { $preference = 1; }
+	my $continue   = 0; if ($a_sum > 0.00000001) { $continue   = 1; }
 	return ($preference, $continue);
 }
 my $text = <<'EOT';
-/w -3.1416 def % evol step 0.0001 min -3.17 max -3.12
-/x 1.4 def % evol step 1
-/y 2.17 def % evol step 0.01 min 2.1
-/z 4.66 def % evol step 0.1 max 5
+/w 3.456  def % evol step 0.8 min 0 max 1
+/x 1.234  def % evol step 0.4 min 0 max 1
+/y -2.345 def % evol step 0.6 min 0 max 1
+/z 4.567  def % evol step 1.2
 EOT
 
 my @x  = (3.456, 1.234, -2.345, 4.567);
 my @sm = (.8, .4, .6, 1.2);
 my $fail = 0;
 
+# ----------------- first test &evol --------------------
 my @returns = &evol(\@x, \@sm, \&minimise, \&contain, 10);
 my $fail1 = 0;
-foreach (@{$returns[0]}) {
-	if (abs $_ > 0.0001) { warn "\$_ = $_\n"; $fail++; $fail1++; }
-}
+foreach (@{$returns[0]}) { if (abs $_>0.0001) {warn "\$_ = $_\n"; $fail1++;} }
 if ($fail1) { warn "subroutine &evol failed to find the minimum\n"; }
 foreach (@{$returns[1]}) {
-	if (abs $_ > 0.0001) { warn "step size still $_\n"; $fail++; $fail1++; }
+	if (abs $_ > 0.0001) { warn "step size still $_\n"; $fail1++; }
 }
 if ($fail1) {
+	$fail++;
 	warn "evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
 	warn "sm = ", join(", ", @{$returns[1]}), "\n";
 	warn "objective = $returns[2]\n";
@@ -61,12 +65,38 @@ if (! $returns[3]) {
 	warn "evol ran out of time; maybe you have a slow cpu ?\n";
 }
 
+# ----------------- second test &select_evol --------------------
+@returns = &select_evol( \@x, \@sm, \&choosebetter, 0, 1);
+my $fail2 = 0;
+foreach (@{$returns[0]}) { if (abs $_>0.001) {warn "\$_ = $_\n"; $fail2++;} }
+if ($fail2) { warn "subroutine &select_evol failed to find the minimum\n"; }
+foreach (@{$returns[1]}) {
+   if (abs $_ > 0.001) { warn "step size still $_\n"; $fail2++; }
+}
+if ($fail2) {
+	$fail++;
+   warn "select_evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
+   warn "sm = ", join(", ", @{$returns[1]}), "\n";
+} else {
+   print "subroutine select_evol OK\n";
+}
+
+# ------------------------- summary --------------------------
 if ($fail) { warn "failed $fail tests\n"; exit 1;
 } else { warn "passed all tests\n"; exit 0;
 }
 
-&text_evol( $text, \&choosebetter, 2);
-exit;
+# needs a sub choosebettertext, RSN ...
+# ----------------- third test &select_evol --------------------
+my $new_text = &text_evol( $text, \&choosebettertext, 1);
+my $fail3 = 0;
+print "new_text = ...\n$new_text";
+if ($fail3) {
+   warn "select_evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";
+   warn "sm = ", join(", ", @{$returns[1]}), "\n";
+} else {
+   print "subroutine text_evol OK\n";
+}
 
 __END__
 
@@ -78,29 +108,19 @@ test.pl - Perl script to test Math::Evol.pm
 
 =head1 SYNOPSIS
 
+ perl test.pl
+
 =head1 DESCRIPTION
 
 This script tests Math::Evol.pm
-
-=head1 SUBROUTINES
-
-=over 3
-
-=item I<subrname>( $arg1, $arg2 );
-
-=back
 
 =head1 AUTHOR
 
 Peter J Billam <peter@pjb.com.au>
 
-=head1 CREDITS
-
-Based on
-
 =head1 SEE ALSO
 
-http://www.pjb.com.au/, perl(1).
+Math::Evol.pm , http://www.pjb.com.au/ , perl(1).
 
 =cut
 

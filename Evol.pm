@@ -8,8 +8,8 @@
 #########################################################################
 
 package Math::Evol;
-no strict; $^W = 0;
-$VERSION = '1.00';
+no strict;
+$VERSION = '1.01';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -154,7 +154,7 @@ sub select_evol { my ($xbref,$smref,$func_ref,$constrain_ref,$nchoices) = @_;
 		$lm++; if ($lm < $test_every) { next; }
 
    	# adjust the step sizes ...
-		my $k = 0.85 ** ($success_rate <=> $desired_success_rate);
+		my $k = 0.85 ** ($desired_success_rate <=> $success_rate);
 		warn "success_rate=$success_rate k=$k\n" if $debug;
 		foreach $i ($[ .. $nm1) {
 			$sm[$i] *=  $k;
@@ -175,7 +175,7 @@ sub text_evol { my ($text, $nchoices); local ($func_ref) = @_;
 	}
 	if (! $nchoices) { $nchoices = 1; }
 
-	my $debug = 0;
+	my $debug = 1;
 	local @text = split ("\n", $text);
 	my ($linenum,$m,@xb,@sm,@min,@max) = ($[,0);
 	local (@linenums, @firstbits, @middlebits, $lastbit);
@@ -241,8 +241,8 @@ sub text_evol { my ($text, $nchoices); local ($func_ref) = @_;
 		if (defined $max[$i]) { $new_text[$linenum] .= " max $max[$i]"; }
 		$i++;
 	}
-	warn join ("\n", @new_text)."\n" if $debug;
-	return join ("\n", @new_text);
+	warn   join ("\n", @new_text)."\n" if $debug;
+	return join ("\n", @new_text)."\n";
 }
 
 # --------------- infrastructure for evol ----------------
@@ -271,34 +271,38 @@ __END__
 
 =head1 NAME
 
-Math::Evol.pm - EVOL (1+1) Evolution optimisation strategy
+Math::Evol.pm - Evolution search optimisation
 
 =head1 SYNOPSIS
 
  use Math::Evol;
  (\@xb, \@sm, $fb, $lf) =
    &evol (\@xb, \@sm, \&function, \&constrain, $tm, %options);
+ # or
+ (\@xb, \@sm) = &select_evol(\@xb, \@sm, \&choose_best, \&constrain);
+ # or
+ $new_text = &text_evol($text, \&choose_best_text, $nchoices );
 
 =head1 DESCRIPTION
 
-This module implements the two-membered evolution strategy.
-Derivates of the objective function are not required.
-Constraints can be incorporated.
-The caller must supply initial values for the variables and
-for the initial step sizes.
+This module implements the evolution search strategy.  Derivatives of
+the objective function are not required.  Constraints can be incorporated.
+The caller must supply initial values for the variables and for the
+initial step sizes.
 
-This two-membered evolution strategy is a random strategy,
-and as such is particularly robust and will cope well with
-large numbers of variables, or rugged objective funtions.
+This evolution strategy is a random strategy, and as such is
+particularly robust and will cope well with large numbers of variables,
+or rugged objective funtions.
 
-Evol.pm works either automatically with an objective function to be minimised,
-or interactively with a (suitably patient) human
-who at each step will choose the better of two possibilities.
-A subroutine I<ps_evol> is included for human-judgement-based
-fine-tuning of a drawing in PostScript, the parameters to be varied
-being identified in the PS code by means of special comments.
+Evol.pm works either automatically (evol) with an objective function to
+be minimised, or interactively (select_evol) with a (suitably patient)
+human who at each step will choose the better of two possibilities.
+Another subroutine (text_evol) allows the evolution of numeric parameters
+in a text file the parameters to be varied being identified in the text
+by means of special comments.  A script I<ps_evol> which uses that is
+included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.00,
+Version 1.01,
 #COMMENT#
 
 =head1 SUBROUTINES
@@ -351,7 +355,7 @@ I<select_evol> returns a list of two things:
 The $text is assumed to contain some numeric parameters to be varied,
 marked out by magic comments which also supply initial step sizes for them,
 and optionally also maxima and minima.
-for example:
+For example:
 
  $x = -2.3456; # evol step .1
  /x 3.4567 def % evol step .2
@@ -483,7 +487,7 @@ The code of I<evol> is based on the Fortran version in
 I<Numerical Optimisation of Computer Models>
 by Hans-Paul Schwefel, Wiley 1981, pp 104-117, 330-337,
 translated into english by M.W. Finnis from
-I<Numerische Optimierung von Compuer-Modellen mittels der Evolutionsstrategie>
+I<Numerische Optimierung von Computer-Modellen mittels der Evolutionsstrategie>
 (Interdiscipliniary Systems Research, Vol. 26), Birkhaeuser Verlag, Basel 1977.
 The calling interface has been greatly Perlised,
 and the constraining of values has been much simplified.
@@ -497,9 +501,9 @@ see John A.R. Williams CPAN module Math::Amoeba.pm
 which implements the Simplex strategy of Nelder and Mead;
 another good algorithm is that of Davidon, Fletcher, Powell and Stewart,
 currently unimplemented in Perl,
-see Algorithm 46 and notes, in Comp J. 13, 1(Feb 1970), pp 111-113;
-Comp J. 14, 1(Feb 1971), p 106 and
-Comp J. 14, 2(May 1971), pp 214-215.
+see Algorithm 46 and notes, in Comp J. 13, 1 (Feb 1970), pp 111-113;
+Comp J. 14, 1 (Feb 1971), p 106 and
+Comp J. 14, 2 (May 1971), pp 214-215.
 See also http://www.pjb.com.au/, perl(1).
 
 =cut

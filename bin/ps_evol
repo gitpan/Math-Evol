@@ -6,7 +6,7 @@
 #     This script is free software; you can redistribute it and/or      #
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
-# ps_evol Version 1.00
+# ps_evol Version 1.01
 
 eval "require 'Math/Evol.pm';";
 if ($@) { require 'Evol.pm'; }
@@ -73,7 +73,7 @@ ps_evol - Perl script to fine-tune A4 PostScript drawings
 
 =head1 SYNOPSIS
 
-ps_evol plant.ps > p2.ps
+ ps_evol plant.ps > p2.ps
 
 =head1 DESCRIPTION
 
@@ -96,16 +96,20 @@ and marked out by special comments, such as
 
  /gray_sky .87 def % evol step 0.05 min 0.0 max 1.0
 
-see I<perldoc Math::Evol> for more details,
+See I<perldoc Math::Evol> for more details,
 and as an example the PostScript file I<plant.ps>,
 included with the distribution.
 
-Version 1.00,
+Version 1.01,
 #COMMENT#
+
+=head1 DEPENDENCIES
+
+Uses the CPAN module Term::Clui.pm to dialogue with the user.
 
 =head1 AUTHOR
 
-Peter J Billam <peter@pjb.com.au>
+Peter J Billam <computing@pjb.com.au>
 
 =head1 CREDITS
 
