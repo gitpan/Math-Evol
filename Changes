@@ -9,3 +9,4 @@
 20030905 1.03 email replaced by contact.html for improved longevity
 20040809 1.04 'perl Install' works better on solaris without Term::Size
 20050122 1.05 test.pl uses Test::Simple
+20051104 1.06 reject 1st rand call, minor pod improvements

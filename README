@@ -1,5 +1,5 @@
 
-                       Math::Evol.pm
+                        Math::Evol
 
 This module implements the evolution search strategy.
 Derivatives of the objective function are not required.
@@ -30,7 +30,6 @@ that's all ! or you can still do it the old way ...
 	make test
 	make install
 
-For up-to-date source, see http://www.cpan.org/SITES.html
-and look for the directory authors/id/P/PJ/PJB
+For up-to-date source, see http://search.cpan.org/~pjb
 
         Peter J Billam       http://www.pjb.com.au

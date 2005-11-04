@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.05';
+$VERSION = '1.06';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -252,16 +252,19 @@ sub arr2txt { # neat printing of arrays for debug use
 	my @txt; foreach (@_) { push @txt, sprintf('%g',$_); }
 	return join (' ',@txt)."\n";
 }
+my $gaussn_a = rand;  # reject 1st call to rand in case it's zero
+my $gaussn_b;
+my $gaussn_flag;
 sub gaussn {   my $standdev = $_[$[];
 	# returns normal distribution around 0.0 by the Box-Muller rules
-	if (! $flag) {
-		$a = sqrt(-2.0 * log(rand));
-		$b = 6.28318531 * rand;
-		$flag = 1;
-		return ($standdev * $a * sin($b));
+	if (! $gaussn_flag) {
+		$gaussn_a = sqrt(-2.0 * log(rand));
+		$gaussn_b = 6.28318531 * rand;
+		$gaussn_flag = 1;
+		return ($standdev * $gaussn_a * sin($gaussn_b));
 	} else {
-		$flag = 0;
-		return ($standdev * $a * cos($b));
+		$gaussn_flag = 0;
+		return ($standdev * $gaussn_a * cos($gaussn_b));
 	}
 }
 1;
@@ -272,7 +275,7 @@ __END__
 
 =head1 NAME
 
-Math::Evol.pm - Evolution search optimisation
+Math::Evol - Evolution search optimisation
 
 =head1 SYNOPSIS
 
@@ -302,7 +305,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.05,
+Version 1.06,
 #COMMENT#
 
 =head1 SUBROUTINES
@@ -437,7 +440,7 @@ the first ref refers to the current array of values,
 and the others refer to alternative arrays of values.
 The user should then judge which of the arrays is best,
 and I<choose_best> must then return I<($preference, $continue)> where
-<$preference> is the index of the preferred array_ref (0, 1, etc).
+I<$preference> is the index of the preferred array_ref (0, 1, etc).
 The other argument I<($continue)> is set false if the user
 thinks the optimal result has been arrived at;
 this is I<select_evol>'s only convergence criterion.
@@ -497,7 +500,7 @@ and the constraining of values has been much simplified.
 The deterministic optimistation strategies can offer faster
 convergence on smaller problems (say 50 or 60 variables or less)
 with fairly smooth functions;
-see John A.R. Williams CPAN module Math::Amoeba.pm
+see John A.R. Williams CPAN module Math::Amoeba
 which implements the Simplex strategy of Nelder and Mead;
 another good algorithm is that of Davidon, Fletcher, Powell and Stewart,
 currently unimplemented in Perl,
