@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.07';
+$VERSION = '1.08';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -80,7 +80,10 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 		warn "le=$le new step sizes sm = ".&arr2txt(@sm) if $debug;
 		warn "new l = ".&arr2txt(@l) if $debug;
 
-		$ea = abs $ea; $eb = abs $eb; $ec = abs $ec; $ed = abs $ed;
+		if (defined $ea) { $ea = abs $ea; }
+		if (defined $eb) { $eb = abs $eb; }
+		if (defined $ec) { $ec = abs $ec; }
+		if (defined $ed) { $ed = abs $ed; }
 		warn sprintf("fb=%g fc=%g ec=%g ed=%g\n",$fb,$fc,$ec,$ed) if $debug;
 		$lc++;
 		if ($lc < 25) {
@@ -95,7 +98,7 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 			warn "converged absolutely\n" if $debug;
 			return (\@xb, \@sm, $fb, 1);   # 29
 		}
-		if ((defined $fc) && (($fc-$fb)/$ed <= abs($fc))) {
+		if ((defined $ed) && (($fc-$fb)/$ed <= abs($fc))) {
 			warn "converged relativelty\n" if $debug;
 			return (\@xb, \@sm, $fb, 1);
 		}
@@ -307,7 +310,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.07
+Version 1.08
 
 =head1 SUBROUTINES
 
