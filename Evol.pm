@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.06';
+$VERSION = '1.07';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -17,10 +17,10 @@ require Exporter;
 @EXPORT_OK = qw(arr2txt gaussn);
 
 # various epsilons used in convergence testing ...
-$ea = 0.00000000000001;
-$eb = 0.000000001;
-$ec = 0.0000000000000001;
-$ed = 0.00000000001;
+$ea = 0.00000000000001;   # absolute stepsize
+$eb = 0.000000001;        # relative stepsize
+$ec = 0.0000000000000001; # absolute error
+$ed = 0.00000000001;      # relative error
 
 sub new {
 	my $arg1 = shift;
@@ -45,6 +45,7 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 	my @xb = @$xbref;
 	my @sm = @$smref;
 	if (! $tm) { $tm = 10.0; }
+	$tm = abs $tm;
 
 	my $debug = 0;
 	my $n = scalar @xb;      # number of variables
@@ -79,6 +80,7 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 		warn "le=$le new step sizes sm = ".&arr2txt(@sm) if $debug;
 		warn "new l = ".&arr2txt(@l) if $debug;
 
+		$ea = abs $ea; $eb = abs $eb; $ec = abs $ec; $ed = abs $ed;
 		warn sprintf("fb=%g fc=%g ec=%g ed=%g\n",$fb,$fc,$ec,$ed) if $debug;
 		$lc++;
 		if ($lc < 25) {
@@ -89,11 +91,11 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 			} else { next;
 			}
 		}
-		if (($fc-$fb) <= $ec) {   # converged by the absolute criterion ?
+		if ((defined $ec) && (($fc-$fb) <= $ec)) {
 			warn "converged absolutely\n" if $debug;
 			return (\@xb, \@sm, $fb, 1);   # 29
 		}
-		if (($fc-$fb)/$ed <= abs($fc)) {   # by the relative criterion ?
+		if ((defined $fc) && (($fc-$fb)/$ed <= abs($fc))) {
 			warn "converged relativelty\n" if $debug;
 			return (\@xb, \@sm, $fb, 1);
 		}
@@ -305,8 +307,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.06,
-#COMMENT#
+Version 1.07
 
 =head1 SUBROUTINES
 
@@ -331,7 +332,9 @@ I<evol> returns a list of four things:
  I<$fb> the best value of objective function,
  I<$lf> a success parameter
 
-I<$lf> is set false if the search ran out of cpu time.
+I<$lf> is set false if the search ran out of cpu time before converging.
+For more control over the convergence criteria, see the
+CONVERGENCE CRITERIA section below.
 
 =item I<select_evol>(\@xb, \@sm, \&choose_best, \&constrain, $nchoices);
 
@@ -473,6 +476,38 @@ As an example, see the script called I<ps_evol> for fine-tuning
 A4 PostScript drawings which is included with this package.
 
 =back
+
+=head1 CONVERGENCE CRITERIA
+
+$ec (>0.0) is the convergence test, absolute.  The search is
+terminated if the distance between the best and worst values
+of the objective function within the last 25 trials is less
+than or equal to $ec.
+The absolute convergence test is suppressed if $ec is undefined.
+
+$ed (>0.0) is the convergence test, relative. The search is
+terminated if the difference between the best and worst values
+of the objective function within the last 25 trials is less
+than or equal to $ed multiplied by the absolute value of the
+objective function.
+The relative convergence test is suppressed if $ed is undefined.
+
+These interact with two other small numbers $ea and $eb, which are
+the minimum allowable step-sizes, absolute and relative respectively.
+
+These number are set within Math::Evol as follows:
+   $ea = 0.00000000000001;   # absolute stepsize
+   $eb = 0.000000001;        # relative stepsize
+   $ec = 0.0000000000000001; # absolute error
+   $ed = 0.00000000001;      # relative error
+
+You can change those settings before invoking the evol subroutine, e.g.:
+   $Math::Evol::ea = 0.00000000000099;   # absolute stepsize
+   $Math::Evol::eb = 0.000000042;        # relative stepsize
+   $Math::Evol::ec = 0.0000000000000031; # absolute error
+   $Math::Evol::ed = 0.00000000067;      # relative error
+
+The most robust criterion is the maximum-cpu-time parameter $tm
 
 =head1 AUTHOR
 
