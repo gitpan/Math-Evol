@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.08';
+$VERSION = '1.09';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -310,7 +310,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.08
+Version 1.09
 
 =head1 SUBROUTINES
 
@@ -499,16 +499,19 @@ These interact with two other small numbers $ea and $eb, which are
 the minimum allowable step-sizes, absolute and relative respectively.
 
 These number are set within Math::Evol as follows:
-   $ea = 0.00000000000001;   # absolute stepsize
-   $eb = 0.000000001;        # relative stepsize
-   $ec = 0.0000000000000001; # absolute error
-   $ed = 0.00000000001;      # relative error
+
+ $ea = 0.00000000000001;   # absolute stepsize
+ $eb = 0.000000001;        # relative stepsize
+ $ec = 0.0000000000000001; # absolute error
+ $ed = 0.00000000001;      # relative error
 
 You can change those settings before invoking the evol subroutine, e.g.:
-   $Math::Evol::ea = 0.00000000000099;   # absolute stepsize
-   $Math::Evol::eb = 0.000000042;        # relative stepsize
-   $Math::Evol::ec = 0.0000000000000031; # absolute error
-   $Math::Evol::ed = 0.00000000067;      # relative error
+
+ $Math::Evol::ea = 0.00000000000099;   # absolute stepsize
+ $Math::Evol::eb = 0.000000042;        # relative stepsize
+ undef $Math::Evol::ec;  # disable absolute-error-criterion
+ $Math::Evol::ec = 0.0000000000000031; # absolute error
+ $Math::Evol::ed = 0.00000000067;      # relative error
 
 The most robust criterion is the maximum-cpu-time parameter $tm
 

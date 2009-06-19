@@ -5,7 +5,7 @@ use Config;
 &check_kit;
 
 my $libdir; my $bindir; my $man1dir; my $man3dir; my $comment; my $perlbin;
-my $version = '1.08';
+my $version = '1.09';
 ($libdir, $bindir, $man1dir, $man3dir) = &defaults();
 
 if (! -t STDIN) {  # not interactive, use defaults ...
@@ -259,7 +259,7 @@ sub check_kit {
 		'README', 1348,
 		'Changes', 773,
 		'MANIFEST', 86,
-		'Evol.pm', 19652,
+		'Evol.pm', 19698,
 		'bin/ps_evol', 3795,
 		'Clui', 27866,
 		'test.pl', 5927,
