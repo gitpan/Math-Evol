@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.09';
+$VERSION = '1.10';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -285,11 +285,11 @@ Math::Evol - Evolution search optimisation
 =head1 SYNOPSIS
 
  use Math::Evol;
- (\@xb,\@sm,$fb,$lf) = &evol(\@xb,\@sm,\&function,\&constrain,$tm);
+ ($xbref,$smref,$fb,$lf) = evol(\@xb,\@sm,\&function,\&constrain,$tm);
  # or
- (\@xb, \@sm) = &select_evol(\@xb, \@sm, \&choose_best, \&constrain);
+ ($xbref, $smref) = select_evol(\@xb,\@sm,\&choose_best,\&constrain);
  # or
- $new_text = &text_evol($text, \&choose_best_text, $nchoices );
+ $new_text = text_evol($text, \&choose_best_text, $nchoices );
 
 =head1 DESCRIPTION
 
@@ -310,7 +310,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.09
+Version 1.10
 
 =head1 SUBROUTINES
 
@@ -415,7 +415,7 @@ list of values and returns a numerical scalar result. For example,
     my $sum; foreach (@_) { $sum += $_*$_; }  # sigma x**2
     return $sum;
  }
- \@x = &evol (\@xb, \@sm, \&minimise);
+ ($xbref, $smref, $fb, $lf) = evol (\@xb, \@sm, \&minimise);
 
 =item I<constrain>( @x );
 
@@ -436,7 +436,7 @@ should return the list of the acceptable values. For example,
     $_[5] = int ($_[5] + 0.5);     # it's an integer
     return @_;
  }
- \@x = &evol (\@xb, \@sm, \&minimise, \&constrain);
+ ($xbref,$smref,$fb,$lf) = evol (\@xb,\@sm,\&minimise,\&constrain);
 
 =item I<choose_best>( \@a, \@b, \@c ... );
 
@@ -454,13 +454,13 @@ For example,
 
  use Term::Clui;
  sub choose_best { my ($aref, $bref) = @_;
-    &inform("Array 0 is @$aref");
-    &inform("Array 1 is @$bref");
-    my $preference = 0 + &choose('Do you prefer 0 or 1 ?','0','1');
-    my $continue   = &confirm('Continue ?');
+    inform("Array 0 is @$aref");
+    inform("Array 1 is @$bref");
+    my $preference = 0 + choose('Do you prefer 0 or 1 ?','0','1');
+    my $continue   = confirm('Continue ?');
     return ($preference, $continue);
  }
- \@x = &evol(\@xb, \@sm, \&choose_best);
+ ($xbref, $smref, $fb, $lf) = evol(\@xb, \@sm, \&choose_best);
 
 =item I<choose_best_text>( $text1, $text2, $text3 ... );
 
