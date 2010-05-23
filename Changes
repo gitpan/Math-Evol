@@ -14,3 +14,4 @@
 20090618 1.08 one bugfix and four extra tests
 20090619 1.09 minor pod-formatting fix
 20090620 1.10 fix perl-syntax-errors in pod SYNOPSIS and examples
+20100523 1.11 fix BUG #44777: Log of zero error

@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.10';
+$VERSION = '1.11';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -263,7 +263,8 @@ my $gaussn_flag;
 sub gaussn {   my $standdev = $_[$[];
 	# returns normal distribution around 0.0 by the Box-Muller rules
 	if (! $gaussn_flag) {
-		$gaussn_a = sqrt(-2.0 * log(rand));
+		# $gaussn_a = sqrt(-2.0 * log(rand)); BUG #44777: Log of zero error
+		$gaussn_a = sqrt(-2.0 * log(rand(0.999)+0.001));  # 1.12
 		$gaussn_b = 6.28318531 * rand;
 		$gaussn_flag = 1;
 		return ($standdev * $gaussn_a * sin($gaussn_b));
@@ -310,7 +311,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.10
+Version 1.11
 
 =head1 SUBROUTINES
 
