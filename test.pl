@@ -49,13 +49,13 @@ my @sm = (.8, .4, .6, 1.2);
 my @returns = &evol(\@x, \@sm, \&minimise, \&contain, 10);
 my $fail1 = 0;
 foreach (@{$returns[0]}) {
-	if (abs $_>0.0001) { if ($detailed) { warn "\$_ = $_\n"; } $fail1++; }
+	if (abs $_>0.00015) { if ($detailed) { warn "\$_ = $_\n"; } $fail1++; }
 }
 ok (!$fail1, "evol");
 if ($detailed) {
 	if ($fail1) { warn "subroutine &evol failed to find the minimum\n"; }
 	foreach (@{$returns[1]}) {
-		if (abs $_ > 0.0001) { warn "step size still $_\n"; $fail1++; }
+		if (abs $_ > 0.00015) { warn "step size still $_\n"; $fail1++; }
 	}
 	if ($fail1) {
 		warn "evol returns:\n x = ", join(", ", @{$returns[0]}), "\n";

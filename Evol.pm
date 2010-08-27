@@ -9,7 +9,7 @@
 
 package Math::Evol;
 no strict;
-$VERSION = '1.11';
+$VERSION = '1.12';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -59,15 +59,17 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 
 	if ($constrain_ref) { @xb = &$constrain_ref(@xb); }
 	$fb = &$func_ref(@xb); $fc = $fb;
-	while () {
+	while (1) {
 		foreach $i ($[ .. $nm1) { $x[$i] = $xb[$i]+&gaussn($sm[$i]); }
-		if ($constrain_ref) { @x = &$constrain_ref(@x); }
-		warn 'new @x is '.&arr2txt(@x) if $debug;
+		if ($constrain_ref) {
+			@x = &$constrain_ref(@x);
+			warn 'new @x is '.&arr2txt(@x) if $debug;
+		}
 		$ff = &$func_ref (@x);   # find new objective function
 		if ($ff <= $fb) { $le++; $fb=$ff; @xb=@x; }
 		$lm++;  if ($lm < $n) { next; }
 
-   	# adjust the step sizes ...
+   		# adjust the step sizes ...
 		my $k = 0.85 ** ($n+$n <=> $le-$l[$[]);
 		foreach $i ($[ .. $nm1) {
 			$sm[$i] *=  $k;
@@ -75,10 +77,13 @@ sub evol { my ( $xbref,$smref, $func_ref,$constrain_ref, $tm) = @_;
 			if ($sm[$i] < $rel_limit) { $sm[$i] = $rel_limit; }
 			if ($sm[$i] < $ea) { $sm[$i] = $ea; }
 		}
+		# could i_l%10 the index as in lua, rather than shift and push as here
 		shift @l; push (@l, $le); $lm = 0;
-		warn "le=$le l[0]=$l[$[] n=$n k=$k\n" if $debug;
-		warn "le=$le new step sizes sm = ".&arr2txt(@sm) if $debug;
-		warn "new l = ".&arr2txt(@l) if $debug;
+		if ($debug) {
+			warn "le=$le l[0]=$l[$[] n=$n k=$k\n";
+			warn "new step sizes sm = ".&arr2txt(@sm);
+			warn "new l = ".&arr2txt(@l);
+		}
 
 		if (defined $ea) { $ea = abs $ea; }
 		if (defined $eb) { $eb = abs $eb; }
@@ -130,6 +135,7 @@ sub select_evol { my ($xbref,$smref,$func_ref,$constrain_ref,$nchoices) = @_;
 	my $desired_success_rate = 1.0 - 0.8**$nchoices;
 	my $success_rate = $desired_success_rate; 
 	# test every 5*$n binary choices equivalent - 10*$n is just too slow.
+	my $lm = 0;
 	my $test_every = 5 * $n * (log 2) / (log ($nchoices+1));
 	my $ema = exp (-1.0 / $test_every);
 	my $one_m_ema = 1.0 - $ema;
@@ -140,6 +146,7 @@ sub select_evol { my ($xbref,$smref,$func_ref,$constrain_ref,$nchoices) = @_;
 	if ($constrain_ref) { @xb = &$constrain_ref(@xb); }
 	my @func_args;  # array of refs to arrays
 	while () {
+		my @x;  #XXX?
 		@func_args = ( \@xb );
 		foreach (1 .. $nchoices) {
 			foreach $i ($[ .. $nm1) {
@@ -311,7 +318,7 @@ in a text file, the parameters to be varied being identified in the text
 by means of special comments.  A script I<ps_evol> which uses that is
 included for human-judgement-based fine-tuning of drawings in PostScript.
 
-Version 1.11
+Version 1.12
 
 =head1 SUBROUTINES
 
@@ -515,6 +522,48 @@ You can change those settings before invoking the evol subroutine, e.g.:
  $Math::Evol::ed = 0.00000000067;      # relative error
 
 The most robust criterion is the maximum-cpu-time parameter $tm
+
+=head1 LUA
+
+In the C<lua/> subdirectory of the install directory there is
+I<Evol.lua>, which is an exact translation of this Perl code into Lua.
+The function names and arguments are unchanged,
+except that I<text_evol> is not yet implemented.
+Brief Synopsis:
+
+ local M = require 'Evol'
+ local function minimise(x) -- returns a number to be minimised
+    local sum = 1.0
+    for k,v in pairs(x) do sum = sum + v * v end
+    return sum
+ end
+ local function constrain(x)
+    if x[1] > 1.0 then x[1] = 1.0  -- it's a greyscale value
+    elseif x[1] < 0.0 then x[1] = 0.0
+    end
+    return x
+ end
+ local function choose_best(arglist)
+    local preference = 1; local i_arg
+    for i_arg=1,#arglist do
+       local x = arglist[i_arg]
+       if that_suits_me() then preference = i_arg; break end
+    end
+    local continue   = true or false
+    return preference, continue
+ end
+ M.ed = 0.00000000067                       -- relative error
+ local x  = {3.456, 1.234, -2.345, 4.567}  -- starting values
+ local sm = {.8, .4, .6, 1.2}          -- starting step-sizes
+ local tm = 5.0                        -- max time in seconds
+
+ -- and now...
+ xb,sm,fb,lf = M.evol(xb, sm, minimise, constrain, tm)
+ -- or
+ xb,sm = M.select_evol(xb, sm, choose_best, constrain)
+
+ -- not yet implemented :
+ -- new_text = M.text_evol(text, choose_best_text, nchoices)
 
 =head1 AUTHOR
 

@@ -21,14 +21,11 @@ comments, which also supply the step sizes. This makes possible the
 optimisation of code according to human judgement, for example PostScript
 code.  A script ps_evol is included for fine-tuning PostScript drawings.
 
-To install:
-   perl Install
+Also included is a call-compatible translation into Lua.
 
-that's all ! or you can still do it the old way ...
+To install:
 	perl Makefile.PL
-	make
-	make test
-	make install
+	make install test
 
 For up-to-date source, see http://search.cpan.org/~pjb
 
